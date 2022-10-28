@@ -1,0 +1,26 @@
+{
+    "C_Cpp.errorSquiggles": "Disabled",
+    "files.associations": {
+        "*.ejs": "html",
+        "types.h": "c",
+        "idt.h": "c",
+        "utils.h": "c",
+        "isr.h": "c",
+        "screen.h": "c",
+        "ports.h": "c",
+        "timer.h": "c",
+        "string.h": "c",
+        "keyboard.h": "c",
+        "function.h": "c",
+        "kernel.h": "c",
+        "mem.h": "c",
+        "stdio.h": "c",
+        "stdint.h": "c",
+        "inttypes.h": "c",
+        "color.h": "c",
+        "common.h": "c",
+        "irq.h": "c",
+        "*.o": "c",
+        "vga.h": "c"
+    }
+}
