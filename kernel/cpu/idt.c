@@ -1,5 +1,6 @@
 #include "idt.h"
 #include "../libc/common.h"
+#include "../libc/string.h"
 #include "../libc/color.h"
 #include "../drivers/vga.h"
 

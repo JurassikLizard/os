@@ -1,12 +1,14 @@
 #include "keyboard.h"
 #include "../cpu/irq.h"
+#include "../libc/color.h"
+#include "../libc/string.h"
 #include "../libc/common.h"
 #include "../drivers/vga.h"
+#include "../drivers/shell.h"
 
 #define BACKSPACE 0x0E
 #define ENTER 0x1C
 #define LSHIFT 0x2A
-#define LSHIFT_RELEASE 0xAA
 #define TAB 0x0F
 #define CAPS_LOCK 0x3A
 
@@ -15,8 +17,8 @@ static bool shift_pressed = FALSE;
 
 #define SC_MAX 57
 const char scancode_chars[] = { '?', '?', '1', '2', '3', '4', '5', '6',     
-    '7', '8', '9', '0', '-', '=', '?', '?', 'q', 'w', 'e', 'r', 't', 'y', 
-        'u', 'i', 'o', 'p', '[', ']', '?', '?', 'a', 's', 'd', 'f', 'g', 
+    '7', '8', '9', '0', '-', '=', '\b', '\t', 'q', 'w', 'e', 'r', 't', 'y', 
+        'u', 'i', 'o', 'p', '[', ']', '\n', '?', 'a', 's', 'd', 'f', 'g', 
         'h', 'j', 'k', 'l', ';', '\'', '`', '?', '\\', 'z', 'x', 'c', 'v', 
         'b', 'n', 'm', ',', '.', '/', '?', '?', '?', ' '};
 
@@ -47,6 +49,8 @@ char alternate_chars(char ch) {
     }
 }
 
+char key_buffer[512];
+
 /* Handles the keyboard interrupt */
 void keyboard_handler(registers_t *r)
 {
@@ -56,8 +60,8 @@ void keyboard_handler(registers_t *r)
     char ch = 0;
     if(scancode & 0x80) {
         // key release
-        switch(scancode) {
-            case LSHIFT_RELEASE: {
+        switch(scancode ^ 0x80) {
+            case LSHIFT: {
                 shift_pressed = FALSE;
                 break;
             }
@@ -75,24 +79,25 @@ void keyboard_handler(registers_t *r)
                     caps_lock = FALSE;
                 break;
             }           
-            case ENTER: {
-                ch = '\n';
-                break;
-            }          
-            case TAB: {
-                ch = '\t';
-                break;
-            }
             case LSHIFT: {
                 shift_pressed = TRUE;
                 break;
             }
+            case ENTER: {
+                char nl[2] = {'\n', '\0'};
+                kprint(nl, 0);
+                process_input(key_buffer);
+                reset_key_buffer();
+                break;
+            }
             case BACKSPACE: {
+                backspace(key_buffer);
                 ch = '\b';
                 break;
             }
             default: {
-                ch = scancode_chars[(int)scancode];
+                int scan = (int)scancode;
+                ch = scancode_chars[scan];
                 if (caps_lock && is_alpha(ch)) {
                     ch = 32 ^ ch;
                 }
@@ -100,13 +105,18 @@ void keyboard_handler(registers_t *r)
                     if (is_alpha(ch)) ch = 32 ^ ch;
                     else ch = alternate_chars(ch);
                 }
+                append(key_buffer, ch);
                 break;
             } 
         }
 
         char str[2] = {ch, '\0'};
-        kprint(str, 0);
+        kprint(str, MAGENTA_ON_BLACK);
     }
+}
+
+void reset_key_buffer() {
+    memset((uint8_t *)key_buffer, 0, 512);
 }
 
 void keyboard_install()

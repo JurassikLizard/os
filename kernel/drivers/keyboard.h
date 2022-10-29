@@ -3,4 +3,6 @@
 
 void keyboard_install();
 
+void reset_key_buffer();
+
 #endif

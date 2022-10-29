@@ -15,9 +15,12 @@
 #define YELLOW 0x0e
 #define WHITE 0x0f
 
-#define WHITE_ON_DARK_GRAY 0x8f
-#define WHITE_ON_BLACK 0x0f
-#define GRAY_ON_BLACK 0x07
-#define PANIC 0xfc
+#define WHITE_ON_DARK_GRAY DARK_GRAY | WHITE
+#define WHITE_ON_BLACK BLACK | WHITE
+#define GRAY_ON_BLACK BLACK | GRAY
+#define PANIC BLACK | LIGHT_RED
+#define RED_ON_BLACK BLACK | RED
+#define GREEN_ON_BLACK BLACK | GREEN
+#define MAGENTA_ON_BLACK BLACK | MAGENTA
 
 // (bg<<8)|(fg)
