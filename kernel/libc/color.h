@@ -15,12 +15,12 @@
 #define YELLOW 0x0e
 #define WHITE 0x0f
 
-#define WHITE_ON_DARK_GRAY DARK_GRAY | WHITE
-#define WHITE_ON_BLACK BLACK | WHITE
-#define GRAY_ON_BLACK BLACK | GRAY
-#define PANIC BLACK | LIGHT_RED
-#define RED_ON_BLACK BLACK | RED
-#define GREEN_ON_BLACK BLACK | GREEN
-#define MAGENTA_ON_BLACK BLACK | MAGENTA
+#define WHITE_ON_DARK_GRAY (DARK_GRAY << 4) | WHITE
+#define WHITE_ON_BLACK (BLACK << 4) | WHITE
+#define GRAY_ON_BLACK (BLACK << 4) | GRAY
+#define PANIC (WHITE << 4) | LIGHT_RED
+#define RED_ON_BLACK (BLACK << 4) | RED
+#define GREEN_ON_BLACK (BLACK << 4) | GREEN
+#define MAGENTA_ON_BLACK (BLACK << 4) | MAGENTA
 
-// (bg<<8)|(fg)
+// (bg<<4)|(fg)

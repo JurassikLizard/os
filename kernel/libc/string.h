@@ -6,8 +6,12 @@
 void* memmove(void* dstptr, const void* srcptr, size_t size);
 size_t strlen(const char* str);
 int memcmp(const void* aptr, const void* bptr, size_t size);
-void* memset(void* bufptr, int value, size_t size);
+void* memset(void *dst, char val, size_t n);
+uint16_t *memsetw(uint16_t *dst, uint16_t val, size_t size);
+//void* memset(void* bufptr, int value, size_t size);
 void* memcpy(void* restrict dstptr, const void* restrict srcptr, size_t size);
+
+void memory_copy(uint8_t *source, uint8_t *dest, int nbytes);
 
 int strcmp(char s1[], char s2[]);
 

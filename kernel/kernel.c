@@ -9,7 +9,7 @@
 void main() {
     //clear_screen(0);
     kprint("Succesfully booted VGA driver!\n", 0);
-
+    //clear_line(0, 0);
     idt_install();
     isr_install();
     

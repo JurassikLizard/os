@@ -13,10 +13,15 @@ void shell_install(){
 void process_input(char *input){
     char *args1 = next_args(input);
     lower(input);
-    
+     
     if(strcmp(input, "say") == 0){
         kprint(args1, 0);
         kprint("\n", 0);
+    } else if (strcmp(input, "end") == 0 || strcmp(input, "halt") == 0) {
+        kprint("HALTING CPU!\n", PANIC);
+        __asm__ __volatile("hlt");
+    } else if (strcmp(input, "clear") == 0){
+        clear_screen(0);
     }
     
     reset_key_buffer();

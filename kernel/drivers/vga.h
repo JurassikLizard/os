@@ -11,5 +11,6 @@ void kprint(const char *message, int attr);
 void kprint_at(const char *message, int col, int row, int attr);
 
 void clear_screen(int attr);
+void clear_line(int row, int attr);
 
 #endif
