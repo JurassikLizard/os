@@ -22,6 +22,10 @@ typedef char bool;
 #define FALSE 0
 #define TRUE  1
 
+#define IS_INDEXABLE(arg) (sizeof(arg[0]))
+#define IS_ARRAY(arg) (IS_INDEXABLE(arg) && (((void *) &arg) == ((void *) arg)))
+#define ARRAYSIZE(arr) (sizeof(arr) / (IS_ARRAY(arr) ? sizeof(arr[0]) : 0)) // Divides by zero if not proper array
+
 unsigned char inportb (unsigned short _port);
 
 void outportb (unsigned short _port, unsigned char _data);

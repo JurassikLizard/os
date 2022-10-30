@@ -6,6 +6,11 @@
 
 int cursor_offset;
 
+int CURRENT_BACKGROUND = BLACK;
+int CURRENT_SHELL_INPUT = GRAY;
+int CURRENT_SHELL_ARROWS = GREEN;
+int CURRENT_SHELL_OUTPUT = DARK_GRAY;
+
 void set_cursor_offset(int offset);
 
 int get_cursor_offset();
@@ -22,8 +27,9 @@ void kprint_at(const char *message, int col, int row, int attr){
     uint8_t *char_ptr = (uint8_t *)message;
     int offset = (col < 0 && row < 0) ? get_cursor_offset() : get_offset(col, row) ;
     
-    if(attr == 0) attr = GRAY_ON_BLACK;
-    else if (attr == -1) attr = *(VGA_MEMORY + offset * 2);
+    if (attr == SHELL_OUTPUT_VAL) attr = ((CURRENT_BACKGROUND & 0xFF) << 4) | (CURRENT_SHELL_OUTPUT & 0xFF);
+    else if (attr == SHELL_ARROWS_VAL) attr = ((CURRENT_BACKGROUND & 0xFF) << 4) | (CURRENT_SHELL_ARROWS & 0xFF);
+    else if (attr == SHELL_INPUT_VAL) attr = ((CURRENT_BACKGROUND & 0xFF) << 4) | (CURRENT_SHELL_INPUT & 0xFF);
     
     while(*char_ptr != 0) {
         const char c = *char_ptr;
@@ -46,12 +52,8 @@ void kprint_at(const char *message, int col, int row, int attr){
 
         /* Check if the offset is over screen size and scroll */
         if (offset >= VGA_WIDTH  * VGA_HEIGHT) {
-            int i;
-            for (i = 1; i < VGA_HEIGHT; i++) 
-                memory_copy((uint8_t*)(get_offset(0, i) * 2 + VGA_MEMORY),
-                        (uint8_t*)(get_offset(0, i-1) * 2 + VGA_MEMORY),
-                        VGA_WIDTH * 2);
-
+            memmove(VGA_MEMORY, VGA_MEMORY + (VGA_WIDTH * 2), VGA_WIDTH * (VGA_HEIGHT - 1) * 2, 1);
+            
             /* Blank last line */
             clear_line(VGA_HEIGHT - 1, attr);
 
@@ -64,24 +66,50 @@ void kprint_at(const char *message, int col, int row, int attr){
     set_cursor_offset(offset);
 }
 
+void set_background(int attr) {
+    CURRENT_BACKGROUND = attr;
+    update_background();
+}
+
+void update_background() {
+    int i;
+    for(i = 1; i < VGA_WIDTH*VGA_HEIGHT*2; i+=2) {
+        uint8_t attr = (VGA_MEMORY)[i];
+        attr &= 0x0F; // Clear lower nibble
+        attr |= ((CURRENT_BACKGROUND << 4) & 0xF0); // OR in desired mask
+        (VGA_MEMORY)[i] = attr;
+    }
+}
+
+void set_foreground(int val, int attr){
+    switch (val)
+    {
+        case SHELL_ARROWS_VAL:
+            CURRENT_SHELL_ARROWS = attr;
+            break;
+        case SHELL_INPUT_VAL:
+            CURRENT_SHELL_INPUT = attr;
+            break;
+        case SHELL_OUTPUT_VAL:
+            CURRENT_SHELL_OUTPUT = attr;
+            break;
+        default:
+            break;
+    }
+}
+
 void clear_screen(int attr) {
     if(!attr) attr = GRAY_ON_BLACK;
-    int i;
     
-    for (i = 0; i < VGA_HEIGHT; i++) {
-        clear_line(i, attr);
-    }
+    memsetw(VGA_MEMORY, (attr << 8) | ' ', VGA_WIDTH * VGA_HEIGHT, 1);
+    
     set_cursor_offset(get_offset(0, 0));
 }
 
 void clear_line(int line, int attr){
     if(!attr) attr = GRAY_ON_BLACK;
-    int i;
-    int offset = get_offset(0, line) * 2;
-    for(i = 0; i < VGA_WIDTH; i++){
-        (VGA_MEMORY)[offset + i * 2] = ' ';
-        (VGA_MEMORY)[offset + i * 2 + 1] = attr;
-    }
+    
+    memsetw(VGA_MEMORY + (line * VGA_WIDTH * 2), (attr << 8) | ' ', VGA_WIDTH, 1);
 }
 
 void set_cursor_offset(int offset) {

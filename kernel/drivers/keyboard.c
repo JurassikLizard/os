@@ -111,12 +111,12 @@ void keyboard_handler(registers_t *r)
         }
 
         char str[2] = {ch, '\0'};
-        kprint(str, MAGENTA_ON_BLACK);
+        kprint(str, SHELL_INPUT_VAL);
     }
 }
 
 void reset_key_buffer() {
-    memset((uint8_t *)key_buffer, 0, 512);
+    memset((uint8_t *)key_buffer, 0, 512, 1);
 }
 
 void keyboard_install()

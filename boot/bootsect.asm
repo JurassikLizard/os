@@ -41,7 +41,7 @@ load_kernel :
 	call print_rm
 	call printnl_rm
 	mov bx, KERNEL_OFFSET ; Load first 15 sectors from kernel offset
-	mov dh, 40
+	mov dh, 45
 	mov dl, [BOOT_DRIVE]
 	call diskload_rm
 	ret

@@ -51,7 +51,7 @@ void idt_install() {
     idt_ptr.base = (unsigned int)&idt;
 
     /* Clear out the entire IDT, initializing it to zeros */
-    memset((unsigned char *)&idt, 0, sizeof(idt_entry_t) * 256);
+    memset((unsigned char *)&idt, 0, sizeof(idt_entry_t) * 256, 1);
 
     /* Add any new ISRs to the IDT here using idt_set_gate */
 
@@ -141,6 +141,47 @@ void isr_install() {
     idt_set_gate(31, (uint32_t)isr31, 0x08, 0x8E);
 }
 
+/* This is a simple string array. It contains the message that
+*  corresponds to each and every exception. We get the correct
+*  message by accessing like:
+*  exception_message[interrupt_number] */
+const char *exception_messages[32] = {
+    "Division By Zero",
+    "Debug",
+    "Non Maskable Interrupt",
+    "Breakpoint",
+    "Into Detected Overflow",
+    "Out of Bounds",
+    "Invalid Opcode",
+    "No Coprocessor",
+
+    "Double Fault",
+    "Coprocessor Segment Overrun",
+    "Bad TSS",
+    "Segment Not Present",
+    "Stack Fault",
+    "General Protection Fault",
+    "Page Fault",
+    "Unknown Interrupt",
+
+    "Coprocessor Fault",
+    "Alignment Check",
+    "Machine Check",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved"
+};
 
 /* All of our Exception handling Interrupt Service Routines will
 *  point to this function. This will tell us what exception has
@@ -150,48 +191,6 @@ void isr_install() {
 *  happening and messing up kernel data structures */
 void fault_handler(registers_t *r)
 {   
-    /* This is a simple string array. It contains the message that
-    *  corresponds to each and every exception. We get the correct
-    *  message by accessing like:
-    *  exception_message[interrupt_number] */
-    const char *exception_messages[32] = {
-        "Division By Zero",
-        "Debug",
-        "Non Maskable Interrupt",
-        "Breakpoint",
-        "Into Detected Overflow",
-        "Out of Bounds",
-        "Invalid Opcode",
-        "No Coprocessor",
-
-        "Double Fault",
-        "Coprocessor Segment Overrun",
-        "Bad TSS",
-        "Segment Not Present",
-        "Stack Fault",
-        "General Protection Fault",
-        "Page Fault",
-        "Unknown Interrupt",
-
-        "Coprocessor Fault",
-        "Alignment Check",
-        "Machine Check",
-        "Reserved",
-        "Reserved",
-        "Reserved",
-        "Reserved",
-        "Reserved",
-
-        "Reserved",
-        "Reserved",
-        "Reserved",
-        "Reserved",
-        "Reserved",
-        "Reserved",
-        "Reserved",
-        "Reserved"
-    };
-    
     /* Is this a fault whose number is from 0 to 31? */
     if (r->int_no < 32)
     {
