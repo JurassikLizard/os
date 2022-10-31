@@ -21,5 +21,8 @@ void set_foreground(int val, int attr);
 
 void clear_screen(int attr);
 void clear_line(int row, int attr);
+void clear_console_line();
+
+void move_cursor(int amount);
 
 #endif

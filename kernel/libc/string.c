@@ -1,14 +1,14 @@
 #include "string.h"
 #include "common.h"
 
-void* memmove(void* dstptr, const void* srcptr, size_t size, int increment) {
+void* memmove(void* dstptr, const void* srcptr, size_t size) {
 	unsigned char* dst = (unsigned char*) dstptr;
 	const unsigned char* src = (const unsigned char*) srcptr;
 	if (dst < src) {
-		for (size_t i = 0; i < size; i+=increment)
+		for (size_t i = 0; i < size; i++)
 			dst[i] = src[i];
 	} else {
-		for (size_t i = size; i != 0; i-=increment)
+		for (size_t i = size; i != 0; i--)
 			dst[i-1] = src[i-1];
 	}
 	return dstptr;
@@ -33,16 +33,16 @@ int memcmp(const void* aptr, const void* bptr, size_t size) {
 	return 0;
 }
 
-void *memset(void* bufptr, char val, size_t size, int increment) {
+void *memset(void* bufptr, char val, size_t size) {
     uint8_t *temp = bufptr;
-    for (; size != 0; size-=increment) *temp++ = val;
+    for (; size != 0; size--) *temp++ = val;
     return bufptr;
 }
 
-void *memsetw(void *bufptr, uint16_t val, size_t size, int increment)
+void *memsetw(void *bufptr, uint16_t val, size_t size)
 {
     uint16_t *temp = bufptr;
-    for (; size != 0; size-=increment) *temp++ = val;
+    for (; size != 0; size--) *temp++ = val;
     return bufptr;
 }
 

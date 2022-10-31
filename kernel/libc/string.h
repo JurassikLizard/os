@@ -3,11 +3,11 @@
 
 #include "common.h"
 
-void* memmove(void* dstptr, const void* srcptr, size_t size, int increment);
+void* memmove(void* dstptr, const void* srcptr, size_t size);
 size_t strlen(const char* str);
 int memcmp(const void* aptr, const void* bptr, size_t size);
-void* memset(void* bufptr, char val, size_t size, int increment);
-void* memsetw(void* bufptr, uint16_t val, size_t size, int increment);
+void* memset(void* bufptr, char val, size_t size);
+void* memsetw(void* bufptr, uint16_t val, size_t size);
 void* memcpy(void* restrict dstptr, const void* restrict srcptr, size_t size);
 
 int strcmp(const char *s1, const char *s2);
