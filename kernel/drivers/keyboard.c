@@ -11,6 +11,11 @@
 #define LSHIFT 0x2A
 #define TAB 0x0F
 #define CAPS_LOCK 0x3A
+#define UP_ARROW 0x48
+#define LEFT_ARROW 0x4B
+#define RIGHT_ARROW 0x4D
+#define DOWN_ARROW 0x50
+#define ESCAPE 0x01
 
 static bool caps_lock = FALSE;
 static bool shift_pressed = FALSE;
@@ -95,6 +100,18 @@ void keyboard_handler(registers_t *r)
                 ch = '\b';
                 break;
             }
+            case LEFT_ARROW: {
+                move_cursor(-1);
+                break;
+            }
+            case RIGHT_ARROW: {
+                move_cursor(1);
+                break;
+            }
+            case ESCAPE: {
+                clear_console_line();
+                break;
+            }
             default: {
                 int scan = (int)scancode;
                 ch = scancode_chars[scan];
@@ -116,7 +133,7 @@ void keyboard_handler(registers_t *r)
 }
 
 void reset_key_buffer() {
-    memset((uint8_t *)key_buffer, 0, 512, 1);
+    memset((uint8_t *)key_buffer, 0, 512);
 }
 
 void keyboard_install()

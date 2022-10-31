@@ -12,12 +12,13 @@ int CURRENT_SHELL_ARROWS = GREEN;
 int CURRENT_SHELL_OUTPUT = DARK_GRAY;
 
 void set_cursor_offset(int offset);
-
+bool is_valid_cursor_location(int offset);
 int get_cursor_offset();
-
 int get_offset(int col, int row);
 int get_offset_row(int offset);
 int get_offset_col(int offset);
+int get_cursor_reset_offset();
+
 
 void kprint(const char *message, int attr){
     kprint_at(message, -1, -1, attr);
@@ -37,7 +38,7 @@ void kprint_at(const char *message, int col, int row, int attr){
             (VGA_MEMORY)[offset * 2] = '\0';
             offset = get_offset(0, get_offset_row(offset) + 1);
         } else if (c == '\b') {
-            if((offset % 80) > 3) {
+            if(is_valid_cursor_location(offset - 1)) {
                 offset--;
                 (VGA_MEMORY)[offset * 2] = ' ';
                 (VGA_MEMORY)[offset * 2 + 1] = attr;
@@ -52,7 +53,7 @@ void kprint_at(const char *message, int col, int row, int attr){
 
         /* Check if the offset is over screen size and scroll */
         if (offset >= VGA_WIDTH  * VGA_HEIGHT) {
-            memmove(VGA_MEMORY, VGA_MEMORY + (VGA_WIDTH * 2), VGA_WIDTH * (VGA_HEIGHT - 1) * 2, 1);
+            memmove(VGA_MEMORY, VGA_MEMORY + (VGA_WIDTH * 2), VGA_WIDTH * (VGA_HEIGHT - 1) * 2);
             
             /* Blank last line */
             clear_line(VGA_HEIGHT - 1, attr);
@@ -101,7 +102,7 @@ void set_foreground(int val, int attr){
 void clear_screen(int attr) {
     if(!attr) attr = GRAY_ON_BLACK;
     
-    memsetw(VGA_MEMORY, (attr << 8) | ' ', VGA_WIDTH * VGA_HEIGHT, 1);
+    memsetw(VGA_MEMORY, (attr << 8) | ' ', VGA_WIDTH * VGA_HEIGHT);
     
     set_cursor_offset(get_offset(0, 0));
 }
@@ -109,7 +110,30 @@ void clear_screen(int attr) {
 void clear_line(int line, int attr){
     if(!attr) attr = GRAY_ON_BLACK;
     
-    memsetw(VGA_MEMORY + (line * VGA_WIDTH * 2), (attr << 8) | ' ', VGA_WIDTH, 1);
+    memsetw(VGA_MEMORY + (line * VGA_WIDTH * 2), (attr << 8) | ' ', VGA_WIDTH);
+}
+
+void clear_console_line() {
+    int shell_start_len = strlen(SHELL_START_LINE);
+    int offset = get_offset_row(get_cursor_offset()) * VGA_WIDTH;
+    for(int i = shell_start_len; i < VGA_WIDTH; i++) {
+        (VGA_MEMORY)[offset * 2 + i * 2] = ' ';
+    }
+    set_cursor_offset(offset + shell_start_len);
+}
+
+void move_cursor(int amount) {
+    int new_offset = get_cursor_offset() + amount;
+    if(is_valid_cursor_location(new_offset)) set_cursor_offset(new_offset);
+}
+
+bool is_valid_cursor_location(int offset) {
+    if ((offset % 80) < (int)strlen(SHELL_START_LINE)) return FALSE;
+    return TRUE;
+}
+
+int get_cursor_reset_offset() {
+    return get_offset(0, get_offset_row(get_cursor_offset())) + (int)strlen(SHELL_START_LINE);
 }
 
 void set_cursor_offset(int offset) {
