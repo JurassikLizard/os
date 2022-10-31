@@ -1,9 +1,9 @@
-#include "kernel.h"
 #include "./cpu/idt.h"
 #include "./cpu/irq.h"
 #include "./cpu/timer.h"
 #include "./libc/color.h"
 #include "./drivers/vga.h"
+#include "./drivers/shell.h"
 #include "./drivers/keyboard.h"
 
 void main() {
@@ -20,6 +20,10 @@ void main() {
     timer_install();
 
     keyboard_install();
+    
+    shell_install();
+
+    //process_input("say lol");
 
     //__asm("int $0x2");
     //__asm("int $0x3");

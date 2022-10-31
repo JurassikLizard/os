@@ -21,6 +21,7 @@
         "common.h": "c",
         "irq.h": "c",
         "*.o": "c",
-        "vga.h": "c"
+        "vga.h": "c",
+        "shell.h": "c"
     }
 }

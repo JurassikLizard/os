@@ -1,6 +1,8 @@
 #include "vga.h"
 #include "../libc/color.h"
 #include "../libc/common.h"
+#include "../libc/string.h"
+#include "../drivers/shell.h"
 
 int cursor_offset;
 
@@ -24,13 +26,17 @@ void kprint_at(const char *message, int col, int row, int attr){
 
     while(*char_ptr != 0) {
         const char c = *char_ptr;
-        if (c == '\n') {
+        if (c == '\n') { // Prevent >> in shell from being deleted
             *(VGA_MEMORY + offset * 2) = '\0';
             offset = get_offset(0, get_offset_row(offset) + 1);
         } else if (c == '\b') {
-            offset--;
-            *(VGA_MEMORY + offset * 2) = ' ';
-            *(VGA_MEMORY + offset * 2 + 1) = attr;
+            if((offset % 80) > 3) {
+                offset--;
+                *(VGA_MEMORY + offset * 2) = ' ';
+                *(VGA_MEMORY + offset * 2 + 1) = attr;
+            }
+        } else if (c == '\t') {
+            offset += (4 - ((offset - strlen(SHELL_START_LINE)) % 4));
         } else {
             *(VGA_MEMORY + offset * 2) = c;
             *(VGA_MEMORY + offset * 2 + 1) = attr;
