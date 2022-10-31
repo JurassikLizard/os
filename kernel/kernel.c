@@ -7,9 +7,9 @@
 #include "./drivers/keyboard.h"
 
 void main() {
-    //clear_screen(0);
-    kprint("Succesfully booted VGA driver!\n", 0);
-    //clear_line(0, 0);
+    clear_screen(0);
+    kprint("Succesfully booted VGA driver!\n", GRAY_ON_BLACK);
+    
     idt_install();
     isr_install();
     
@@ -22,8 +22,6 @@ void main() {
     keyboard_install();
     
     shell_install();
-
-    //process_input("say lol");
 
     //__asm("int $0x2");
     //__asm("int $0x3");
