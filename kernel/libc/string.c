@@ -33,11 +33,20 @@ int memcmp(const void* aptr, const void* bptr, size_t size) {
 	return 0;
 }
 
-void* memset(void* bufptr, int value, size_t size) {
-	unsigned char* buf = (unsigned char*) bufptr;
-	for (size_t i = 0; i < size; i++)
-		buf[i] = (unsigned char) value;
-	return bufptr;
+void *memset(void *dst, char val, size_t size) {
+    char *temp = dst;
+    for (; size != 0; size--) *temp++ = val;
+    return dst;
+}
+
+uint16_t *memsetw(uint16_t *dst, uint16_t val, size_t size)
+{
+    uint16_t *temp = (uint16_t *)dst;
+    for( ; size != 0; size--) {
+        *temp = val;
+        temp+=2;
+    }
+    return dst;
 }
 
 void* memcpy(void* restrict dstptr, const void* restrict srcptr, size_t size) {
@@ -46,6 +55,13 @@ void* memcpy(void* restrict dstptr, const void* restrict srcptr, size_t size) {
 	for (size_t i = 0; i < size; i++)
 		dst[i] = src[i];
 	return dstptr;
+}
+
+void memory_copy(uint8_t *source, uint8_t *dest, int nbytes) {
+    int i;
+    for (i = 0; i < nbytes; i++) {
+        *(dest + i) = *(source + i);
+    }
 }
 
 /* K&R 
